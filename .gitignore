@@ -3,4 +3,4 @@
 node_modules
 web/static/assets/ffmpeg/
 web/static/assets/lib
-
+web/static/assets/img/frames/
