@@ -1,0 +1,127 @@
+<!DOCTYPE html><html><head><link rel="stylesheet" type="text/css" href="assets/lib/bootstrap/main/css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="assets/lib/@loadingio/bootstrap.ext/main/index.min.css"><link rel="stylesheet" type="text/css" href="assets/lib/ldcover/main/ldcv.min.css"></head><body><video ld="video" width="200" height="200" controls loop></video><a ld="download">download</a><script type="text/javascript" src="assets/lib/proxise/main/proxise.min.js"></script><script type="text/javascript" src="assets/lib/@loadingio/ldquery/main/ldq.min.js"></script><script type="text/javascript" src="assets/lib/ldview/main/index.min.js"></script><script type="text/javascript" src="assets/lib/ldcover/main/ldcv.min.js"></script><script>var convert;
+convert = function(opt){
+  var files, type, useWorker, worker, lock, promises;
+  opt == null && (opt = {});
+  files = opt.files;
+  type = opt.type || 'webm';
+  useWorker = !(opt.worker != null) || opt.worker;
+  worker = useWorker ? new Worker("/assets/ffmpeg/ffmpeg-worker-" + type + ".js") : null;
+  lock = {
+    finish: proxise(function(){}),
+    init: proxise(function(){
+      if (!useWorker) {
+        return Promise.resolve();
+      }
+      return worker.onmessage = function(e){
+        var msg;
+        msg = e.data;
+        switch (msg.type) {
+        case 'ready':
+          return lock.init.resolve();
+        case 'stderr':
+          return console.log(msg.data);
+        case 'done':
+          return lock.finish.resolve(msg.data);
+        }
+      };
+    })
+  };
+  promises = files.map(function(file){
+    if (typeof file === 'string') {
+      return ld$.fetch(file, {
+        method: "GET"
+      }).then(function(blob){
+        return blob.arrayBuffer();
+      }).then(function(buf){
+        return new Uint8Array(buf);
+      });
+    } else {
+      return Promise.resolve(file);
+    }
+  });
+  return lock.init().then(function(){
+    return Promise.all(promises);
+  }).then(function(files){
+    var opt;
+    files = files.map(function(data, idx){
+      return {
+        name: ('' + idx).padStart(5, '0') + ".png",
+        data: data
+      };
+    });
+    opt = import$({
+      arguments: convert.args[type],
+      MEMFS: files,
+      TOTAL_MEMORY: 1024 * 1024 * 1024
+    }, useWorker
+      ? {}
+      : {
+        print: function(){},
+        printErr: function(it){
+          return console.log(it);
+        },
+        onExit: function(){}
+      });
+    if (useWorker) {
+      worker.postMessage(import$({
+        type: 'run'
+      }, opt));
+      return lock.finish();
+    } else {
+      return ffmpeg(opt);
+    }
+  }).then(function(ret){
+    var blob, url;
+    blob = new Blob([ret.MEMFS[0].data], {
+      type: "video/" + type
+    });
+    url = URL.createObjectURL(blob);
+    return {
+      blob: blob,
+      url: url
+    };
+  });
+};
+convert.args = {
+  mp4: ["-i", "%05d.png", "-c:v", "libx264", "-pix_fmt", "yuv420p", "out.mp4"],
+  webm: ["-i", "%05d.png", "-auto-alt-ref", "0", "-c:v", "libvpx", "-b:v", "2M", "-crf", "-1", "out.webm"]
+};
+function import$(obj, src){
+  var own = {}.hasOwnProperty;
+  for (var key in src) if (own.call(src, key)) obj[key] = src[key];
+  return obj;
+}</script><script>(function(it){
+  return it.apply({});
+})(function(){
+  var type, files;
+  type = 'webm';
+  files = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45].map(function(idx){
+    return "/assets/img/frames/frame-" + idx + ".png";
+  });
+  return convert({
+    files: files,
+    type: type,
+    worker: true
+  }).then(function(arg$){
+    var blob, url, view;
+    blob = arg$.blob, url = arg$.url;
+    return view = new ldview({
+      root: document.body,
+      handler: {
+        download: function(arg$){
+          var node;
+          node = arg$.node;
+          node.setAttribute('href', url);
+          return node.setAttribute('download', "output." + type);
+        },
+        video: function(arg$){
+          var node, src;
+          node = arg$.node;
+          src = document.createElement("source");
+          src.setAttribute('src', url);
+          return node.appendChild(src);
+        }
+      }
+    });
+  });
+});</script></body></html>

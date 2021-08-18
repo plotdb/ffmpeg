@@ -1,0 +1,18 @@
+doctype html
+html
+  include @/@loadingio/bootstrap.ext/dist/index.pug
+  head
+    +css("assets/lib/bootstrap/main/css/bootstrap.min.css")
+    +css("assets/lib/@loadingio/bootstrap.ext/main/index.min.css")
+    +css("assets/lib/ldcover/main/ldcv.min.css")
+  body
+    video(ld="video",width="200",height="200",controls,loop)
+    a(ld="download") download
+    +script("assets/lib/proxise/main/proxise.min.js")
+    +script("assets/lib/@loadingio/ldquery/main/ldq.min.js")
+    +script("assets/lib/ldview/main/index.min.js")
+    +script("assets/lib/ldcover/main/ldcv.min.js")
+    //-+script("assets/ffmpeg/mp4.bundle.js")
+    script: include:lsc convert.ls
+    script: include:lsc index.ls
+
