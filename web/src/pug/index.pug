@@ -5,14 +5,47 @@ html
     +css("assets/lib/bootstrap/main/css/bootstrap.min.css")
     +css("assets/lib/@loadingio/bootstrap.ext/main/index.min.css")
     +css("assets/lib/ldcover/main/ldcv.min.css")
+    style(type="text/css"): :stylus
+      body
+        background: rgba(228,240,255,1)
   body
-    video(ld="video",width="200",height="200",controls,loop)
-    a(ld="download") download
-    +script("assets/lib/proxise/main/proxise.min.js")
+    .ldcv: .base(style="width:640px;max-width:80%;height:8em;"): .inner: .p-4
+      h3.mb-4 Building ...
+      .progress
+        .progress-bar.progress-bar-striped.progress-bar-animated(ld="progress", style="width:0%")
+
+    .w-1024.rwd.mx-auto.my-4
+      h1 @plotdb/ffmpeg
+      p in browser webm / mp4 / animated webp generation
+      br
+      .d-flex.justify-content-center
+        .form-group.mx-2
+          label.text-sm Output Format
+          select.form-control.border.border-dark(ld="format")
+            option(value="mp4") MP4
+            option(value="webm") WebM
+            option(value="webp") WebP
+        .form-group.mx-2
+          label.text-sm Sample Sequence
+          .dropdown(ld="dropdown")
+            .btn.btn-light.border.border-dark.d-block.dropdown-toggle.text-capitalize(
+            ld="sample-name",data-toggle="dropdown") Ripple
+            .dropdown-menu.shadow-sm: .dropdown-item.text-capitalize(ld-each="sample-item")
+        .form-group.mx-2
+          label.text-sm &nbsp; &nbsp;
+          .btn.btn-light.border.border-dark.d-block(ld="convert") Convert
+
+      .d-flex.justify-content-center.my-4
+        .text-center
+          div.d-none(ld="video",style="width:200px;height:200px")
+          img(ld="image",style="width:200px;height:200px")
+          br
+          a.my-4.d-block(ld="download") download link
+    +script("assets/lib/bootstrap.native/main/bootstrap-native-v4.min.js")
+    +script("assets/lib/@loadingio/debounce.js/main/debounce.min.js")
     +script("assets/lib/@loadingio/ldquery/main/ldq.min.js")
     +script("assets/lib/ldview/main/index.min.js")
     +script("assets/lib/ldcover/main/ldcv.min.js")
-    //-+script("assets/ffmpeg/mp4.bundle.js")
-    script: include:lsc convert.ls
+    +script("assets/lib/@plotdb/ffmpeg/main/index.min.js")
     script: include:lsc index.ls
 

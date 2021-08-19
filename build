@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+echo "prepare..."
+rm -rf dist
+mkdir -p dist
+
+echo "building index.ls -> index.js ..."
+./node_modules/.bin/lsc -cp src/index.ls > dist/index.js
+echo "minify index.js -> index.min.js ..."
+./node_modules/.bin/uglifyjs dist/index.js > dist/index.min.js
+echo "copy plotdb-ffmpeg-worker.js to dist ..."
+cp ffmpeg.js/plotdb-ffmpeg-worker.js dist/worker.js
+
+echo "copy dist to web ..."
+rm -rf web/static/assets/lib/@plotdb/ffmpeg/main/
+mkdir -p web/static/assets/lib/@plotdb/ffmpeg/main/
+cp -R dist/* web/static/assets/lib/@plotdb/ffmpeg/main/

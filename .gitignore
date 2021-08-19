@@ -1,6 +1,7 @@
 .*.swp
 .swp
 node_modules
-web/static/assets/ffmpeg/
 web/static/assets/lib
-web/static/assets/img/frames/
+web/src/pug/dev/
+web/.view
+web/static/assets/img/spinner/

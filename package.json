@@ -9,6 +9,7 @@
   "license": "MIT",
   "devDependencies": {
     "@loadingio/bootstrap.ext": "^0.0.1",
+    "@loadingio/debounce.js": "0.0.1",
     "@loadingio/ldquery": "^2.1.0",
     "@zbryikt/template": "^2.3.13",
     "bootstrap": "^5.1.0",
@@ -24,7 +25,7 @@
       "bootstrap.native",
       "@loadingio/bootstrap.ext",
       "@loadingio/ldquery",
-      "proxise",
+      "@loadingio/debounce.js",
       "ldcover",
       "ldview"
     ]

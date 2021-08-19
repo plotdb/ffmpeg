@@ -1,0 +1,2 @@
+ffmpeg.js/plotdb-ffmpeg-worker.js filter=lfs diff=lfs merge=lfs -text
+dist/worker.js filter=lfs diff=lfs merge=lfs -text
