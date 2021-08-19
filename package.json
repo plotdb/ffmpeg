@@ -3,6 +3,9 @@
   "version": "0.0.1",
   "author": "zbryikt",
   "description": "ffmpeg wasm custom build for mp4, webm and webp",
+  "files": [
+    "dist/**/*"
+  ],
   "scripts": {
     "start": "npx server -r web -o true"
   },
@@ -29,8 +32,5 @@
       "ldcover",
       "ldview"
     ]
-  },
-  "dependencies": {
-    "proxise": "^0.1.2"
   }
 }
