@@ -11,7 +11,8 @@
       list: []
     };
     this.evtHandler = {};
-    this.workerUrl = "/assets/lib/@plotdb/ffmpeg/main/worker.js";
+    this.workerUrl = opt.worker || "/assets/lib/@plotdb/ffmpeg/main/worker.js";
+    this.canvas = document.createElement('canvas');
     return this;
   };
   ffmpeg.args = {
@@ -111,18 +112,45 @@
       });
     },
     convert: function(arg$){
-      var files, format, progress, ref$, promises, this$ = this;
+      var files, format, progress, ref$, canvas, promises, this$ = this;
       files = arg$.files, format = arg$.format, progress = arg$.progress;
-      ref$ = [files || [], format || 'webm'], files = ref$[0], format = ref$[1];
+      ref$ = [files || [], format || 'webm', this.canvas], files = ref$[0], format = ref$[1], canvas = ref$[2];
       promises = files.map(function(file){
+        var img, p;
         if (typeof file === 'string') {
-          return ld$.fetch(file, {
-            method: "GET"
-          }).then(function(blob){
-            return blob.arrayBuffer();
-          }).then(function(buf){
-            return new Uint8Array(buf);
+          img = new Image();
+          img.src = file;
+          file = img;
+          /* ... or fetch. this doesn't work without a server */
+        }
+        if (file instanceof Image) {
+          p = file.complete
+            ? Promise.resolve()
+            : new Promise(function(res, rej){
+              return file.onload = function(){
+                return res();
+              };
+            });
+          return p.then(function(){
+            var width, height, ctx;
+            width = file.width, height = file.height;
+            canvas.width = width;
+            canvas.height = height;
+            ctx = canvas.getContext('2d');
+            ctx.drawImage(file, 0, 0, width, height);
+            return new Promise(function(res, rej){
+              return canvas.toBlob(function(blob){
+                var fr;
+                fr = new FileReader();
+                fr.onload = function(){
+                  return res(new Uint8Array(fr.result));
+                };
+                return fr.readAsArrayBuffer(blob);
+              }, 'image/png');
+            });
           });
+        } else if (file instanceof ArrayBuffer) {
+          return Promise.resolve(new Uint8Array(buf));
         } else {
           return Promise.resolve(file);
         }
@@ -144,6 +172,7 @@
           this$._progress = function(it){
             return progress((it || 0) / files.length);
           };
+          this$._progress(0);
         }
         return this$._convert(opt);
       }).then(function(ret){

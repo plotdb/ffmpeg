@@ -1,7 +1,7 @@
 <!DOCTYPE html><html><head><link rel="stylesheet" type="text/css" href="assets/lib/bootstrap/main/css/bootstrap.min.css"><link rel="stylesheet" type="text/css" href="assets/lib/@loadingio/bootstrap.ext/main/index.min.css"><link rel="stylesheet" type="text/css" href="assets/lib/ldcover/main/ldcv.min.css"><style type="text/css">body {
   background: #e4f0ff;
 }
-</style></head><body><div class="ldcv"><div class="base" style="width:640px;max-width:80%;height:8em;"><div class="inner"><div class="p-4"><h3 class="mb-4">Building ...</h3><div class="progress"><div class="progress-bar progress-bar-striped progress-bar-animated" ld="progress" style="width:0%"></div></div></div></div></div></div><div class="w-1024 rwd mx-auto my-4"><h1>@plotdb/ffmpeg</h1><p>in browser webm / mp4 / animated webp generation</p><br><div class="d-flex justify-content-center"><div class="form-group mx-2"><label class="text-sm">Output Format</label><select class="form-control border border-dark" ld="format"><option value="mp4">MP4</option><option value="webm">WebM</option><option value="webp">WebP</option></select></div><div class="form-group mx-2"><label class="text-sm">Sample Sequence</label><div class="dropdown" ld="dropdown"><div class="btn btn-light border border-dark d-block dropdown-toggle text-capitalize" ld="sample-name" data-toggle="dropdown">Ripple</div><div class="dropdown-menu shadow-sm"><div class="dropdown-item text-capitalize" ld-each="sample-item"></div></div></div></div><div class="form-group mx-2"><label class="text-sm">&nbsp; &nbsp;</label><div class="btn btn-light border border-dark d-block" ld="convert">Convert</div></div></div><div class="d-flex justify-content-center my-4"><div class="text-center"><div class="d-none" ld="video" style="width:200px;height:200px"></div><img ld="image" style="width:200px;height:200px"><br><a class="my-4 d-block" ld="download">download link</a></div></div></div><script type="text/javascript" src="assets/lib/bootstrap.native/main/bootstrap-native-v4.min.js"></script><script type="text/javascript" src="assets/lib/@loadingio/debounce.js/main/debounce.min.js"></script><script type="text/javascript" src="assets/lib/@loadingio/ldquery/main/ldq.min.js"></script><script type="text/javascript" src="assets/lib/ldview/main/index.min.js"></script><script type="text/javascript" src="assets/lib/ldcover/main/ldcv.min.js"></script><script type="text/javascript" src="assets/lib/@plotdb/ffmpeg/main/index.min.js"></script><script>(function(it){
+</style></head><body><div class="ldcv"><div class="base" style="width:640px;max-width:80%;height:8em;"><div class="inner"><div class="p-4"><h3 class="mb-4">Building ...</h3><div class="progress"><div class="progress-bar progress-bar-striped progress-bar-animated" ld="progress" style="width:0%"></div></div></div></div></div></div><div class="w-1024 rwd mx-auto my-4"><h1>@plotdb/ffmpeg</h1><p>in browser webm / mp4 / animated webp generation</p><br><div class="d-flex justify-content-center"><div class="form-group mx-2"><label class="text-sm">Methods</label><select class="form-control border border-dark" ld="method"><option value="url">URL</option><option value="img">Image()</option></select></div><div class="form-group mx-2"><label class="text-sm">Output Format</label><select class="form-control border border-dark" ld="format"><option value="mp4">MP4</option><option value="webm">WebM</option><option value="webp">WebP</option></select></div><div class="form-group mx-2"><label class="text-sm">Sample Sequence</label><div class="dropdown" ld="dropdown"><div class="btn btn-light border border-dark d-block dropdown-toggle text-capitalize" ld="sample-name" data-toggle="dropdown">Ripple</div><div class="dropdown-menu shadow-sm"><div class="dropdown-item text-capitalize" ld-each="sample-item"></div></div></div></div><div class="form-group mx-2"><label class="text-sm">&nbsp; &nbsp;</label><div class="btn btn-light border border-dark d-block" ld="convert">Convert</div></div></div><div class="d-flex justify-content-center my-4"><div class="text-center"><div class="d-none" ld="video" style="width:200px;height:200px"></div><img ld="image" style="width:200px;height:200px"><br><a class="my-4 d-none" ld="download">download link</a></div></div></div><script type="text/javascript" src="assets/lib/bootstrap.native/main/bootstrap-native-v4.min.js"></script><script type="text/javascript" src="assets/lib/@loadingio/debounce.js/main/debounce.min.js"></script><script type="text/javascript" src="assets/lib/@loadingio/ldquery/main/ldq.min.js"></script><script type="text/javascript" src="assets/lib/ldview/main/index.min.js"></script><script type="text/javascript" src="assets/lib/ldcover/main/ldcv.min.js"></script><script type="text/javascript" src="assets/lib/@plotdb/ffmpeg/main/index.min.js"></script><script>(function(it){
   return it.apply({});
 })(function(){
   var sampleItems, this$ = this;
@@ -25,6 +25,7 @@
   ];
   this.format = 'webm';
   this.sample = sampleItems[0];
+  this.method = 'url';
   this.output = null;
   this.ldcv = new ldcover({
     root: '.ldcv',
@@ -43,7 +44,17 @@
     }.call(this$)).map(function(idx){
       return "/assets/img/" + this$.sample.name + "/frame-" + idx + ".png";
     });
+    if (this$.method === 'img') {
+      files = files.map(function(url){
+        var img;
+        img = new Image();
+        img.src = url;
+        return img;
+      });
+    }
     return this$.ffmpeg.init().then(function(){
+      this$.progress = 0;
+      this$.view.render('progress');
       return this$.ldcv.toggle(true);
     }).then(function(){
       return this$.ffmpeg.convert({
@@ -79,6 +90,11 @@
         }
       },
       input: {
+        method: function(arg$){
+          var node;
+          node = arg$.node;
+          return this$.method = node.value || 'url';
+        },
         format: function(arg$){
           var node;
           node = arg$.node;
@@ -130,6 +146,8 @@
       download: function(arg$){
         var node;
         node = arg$.node;
+        node.classList.toggle('d-block', !!this$.output);
+        node.classList.toggle('d-none', !this$.output);
         if (!this$.output) {
           return;
         }

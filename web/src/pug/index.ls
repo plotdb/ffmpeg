@@ -8,7 +8,7 @@ sample-items = [
   {name: "wedges",  frame:  92}
 ]
 
-@ <<< format: \webm, sample: sample-items.0, output: null
+@ <<< format: \webm, sample: sample-items.0, method: 'url', output: null
 @ldcv = new ldcover root: '.ldcv', lock: true
 
 @ffmpeg = new ffmpeg!
@@ -16,8 +16,16 @@ sample-items = [
 
 @render = ~>
   files = [1 to @sample.frame].map (idx) ~> "/assets/img/#{@sample.name}/frame-#{idx}.png"
+  if @method == \img =>
+    files = files.map (url) ->
+      img = new Image!
+      img.src = url
+      return img
   @ffmpeg.init!
-    .then ~> @ldcv.toggle true
+    .then ~>
+      @progress = 0
+      @view.render \progress
+      @ldcv.toggle true
     .then ~>
       @ffmpeg.convert {
         files, format: @format,
@@ -35,7 +43,9 @@ sample-items = [
   root: document.body
   action:
     click: convert: ~> @render!
-    input: format: ({node}) ~> @format = node.value or 'webm'
+    input:
+      method: ({node}) ~> @method = node.value or 'url'
+      format: ({node}) ~> @format = node.value or 'webm'
   init:
     format: ({node}) -> node.value = @format or 'webm'
     dropdown: ({node}) -> new BSN.Dropdown node
@@ -49,6 +59,8 @@ sample-items = [
       text: ({data}) -> return data.name
     "sample-name": ({node}) ~> node.textContent = @sample.name
     download: ({node}) ~>
+      node.classList.toggle \d-block, !!@output
+      node.classList.toggle \d-none, !@output
       if !@output => return
       node.setAttribute \href, @output.url
       node.setAttribute \download, "output.#{@format}"

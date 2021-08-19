@@ -3,7 +3,8 @@ ffmpeg = (opt = {}) ->
     inited: false, _init: []
     worker: null, queue: {main: null, list: []}
     evt-handler: {}
-  @worker-url = "/assets/lib/@plotdb/ffmpeg/main/worker.js"
+  @worker-url = opt.worker or "/assets/lib/@plotdb/ffmpeg/main/worker.js"
+  @canvas = document.createElement \canvas
   @
 
 ffmpeg.args = do
@@ -42,14 +43,38 @@ ffmpeg.prototype = Object.create(Object.prototype) <<< do
       @queue.main = {res, rej}
       @worker.postMessage({type: \run} <<< opt)
 
+  # files: either list of url / Image object, uint8array or arraybuffer.
   convert: ({files, format, progress}) ->
-    [files, format] = [(files or []), (format or 'webm')]
+    [files, format, canvas] = [(files or []), (format or 'webm'), @canvas]
+    # url: fetch doesn't work with local environment
+    # buffer: somehow complicated to do. redundant for every user.
+    # Image + Canvas + FileReader: don't have to worry about URL.
+    #   Image(any url, remote or local) -> Canvas -> blob -> read by FileReader -> Buffer
 
     promises = files.map (file) -> 
       if typeof(file) == \string =>
-        ld$.fetch file, {method: "GET"}
-          .then (blob) -> blob.arrayBuffer!
-          .then (buf) -> new Uint8Array buf
+        img = new Image!
+        img.src = file
+        file = img
+        /* ... or fetch. this doesn't work without a server */
+        #ld$.fetch file, {method: "GET"}
+        #  .then (blob) -> blob.arrayBuffer!
+        #  .then (buf) -> new Uint8Array buf
+
+      if file instanceof Image =>
+        p = if file.complete => Promise.resolve!
+        else new Promise (res, rej) -> file.onload = -> res!
+        p.then ->
+          {width, height} = file
+          canvas <<< {width, height}
+          ctx = canvas.getContext \2d
+          ctx.drawImage file, 0, 0, width, height
+          (res, rej) <- new Promise _
+          (blob) <- canvas.toBlob _, \image/png
+          fr = new FileReader!
+          fr.onload = -> res new Uint8Array fr.result
+          fr.readAsArrayBuffer(blob)
+      else if file instanceof ArrayBuffer => Promise.resolve new Uint8Array buf
       else Promise.resolve(file)
 
     Promise.all promises
@@ -60,7 +85,9 @@ ffmpeg.prototype = Object.create(Object.prototype) <<< do
           MEMFS: files
           TOTAL_MEMORY: 4 * 1024 * 1024 * 1024
         }
-        if progress => @_progress = -> progress((it or 0) / files.length)
+        if progress =>
+          @_progress = -> progress((it or 0) / files.length)
+          @_progress 0
         @_convert opt
       .then (ret) ->
         if progress =>

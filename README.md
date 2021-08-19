@@ -10,18 +10,51 @@ Relative projects:
  - https://github.com/Kagami/ffmpeg.js
 
 
+## Usage
+
+install:
+
+    npm install @plotdb/ffmpeg
+
+
+include:
+
+    <script src="path-to-index.js"></script>
+
+
+prepare `@plotdb/ffmpeg` object:
+
+    ffmpeg = new ffmpeg({ ... });
+    ffmpeg.init();
+      .then(function() {
+        ffmpeg.conver({ ... });
+      });
+
+
+## Constructor Options
+
+ - `worker`: url for worker file ( available as `dist/worker.js` in this repo. )
+
+
+## API
+
+ - `init()`: initialize. return Promsie, resolved when initialized.
+   - guaranteed to init only once against multiple calls
+ - `convert({files, format, progress})`: convert given `files` to `format`, watching progress by `progress`.
+   - `files`: array of either url, Image object, ArrayBuffer or Uint8Array for the images to encode. default `[]`.
+   - `format`: either `webm`, `webp` or `mp4`. default `webm`.
+   - `progress(perecnt)`: optional. if provided, called when convering makes progress.
+     - `percent`: number between `0` ~ `1`. for `0%` ~ `100%` progress correspondingly.
+   - multiple `convert` calls will be queued.
+
+
 ## Custom build
 
-Basically, we need to rebuild ffmpeg into wasm. A sample makefile for this purpose ( from ffmpeg.js ):
+`@plotdb/ffmpeg` use a custom build wasm js from `ffmpeg.js` project. For how to build and use `ffmpeg.js`, check `build instructions` in `ffmpeg.js` for more details.
 
- - https://github.com/Kagami/ffmpeg.js/blob/master/Makefile
-
-Check `build instructions` in `ffmpeg.js` for more details.
-
-use `ffmpeg.js` for a custom ffmpeg wasm build. You need:
+To rebuild the custom build version worker in `@plotdb/ffmpeg`, you need:
 
  - follow `ffmpeg.js` build instruction until before `make` in `ffmpeg.js`
- - apply pull request ( https://github.com/Kagami/ffmpeg.js/pull/149 )
  - add submodule for
    - `build/ffmpeg-plotdb`: to ffmpeg ( https://git.ffmpeg.org/ffmpeg.git )
    - `build/libwebp`: to libwebp ( https://github.com/webmproject/libwebp ) 
@@ -31,6 +64,8 @@ use `ffmpeg.js` for a custom ffmpeg wasm build. You need:
          git submodule add https://github.com/webmproject/libwebp build/libwebp
 
  - apply `Makefile` patch from this project. ( see `ffmpeg.js/MEMO.md` in this repo )
+   - this patch includes a pull request not yet merged, basically for newer `emscripten` to work:
+     - https://github.com/Kagami/ffmpeg.js/pull/149
  - run `make plotdb`
 
 A sample worker js file is available in `ffmpeg.js/plotdb-ffmpeg-worker.js`, 6.6MB in size.
@@ -44,3 +79,10 @@ A sample worker js file is available in `ffmpeg.js/plotdb-ffmpeg-worker.js`, 6.6
  - ffmpeg codecs: https://www.ffmpeg.org/ffmpeg-codecs.html#libwebp
    - this seems undocumented but to enable animated webp, `--enable-encoder=libwebp_anim` is required.
      without this webp will still generated and is animated but there will be issues regarding `dispose method`.
+
+
+## License
+
+ - `src`, `dist` and `web/src`: MIT
+ - `Kagami/ffmpeg.js`: LGPL 2.1 or later
+ - `ffmpeg`: LGPL / GPL / BSD ( including dependencies )

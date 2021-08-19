@@ -20,6 +20,11 @@ html
       br
       .d-flex.justify-content-center
         .form-group.mx-2
+          label.text-sm Methods
+          select.form-control.border.border-dark(ld="method")
+            option(value="url") URL
+            option(value="img") Image()
+        .form-group.mx-2
           label.text-sm Output Format
           select.form-control.border.border-dark(ld="format")
             option(value="mp4") MP4
@@ -40,7 +45,7 @@ html
           div.d-none(ld="video",style="width:200px;height:200px")
           img(ld="image",style="width:200px;height:200px")
           br
-          a.my-4.d-block(ld="download") download link
+          a.my-4.d-none(ld="download") download link
     +script("assets/lib/bootstrap.native/main/bootstrap-native-v4.min.js")
     +script("assets/lib/@loadingio/debounce.js/main/debounce.min.js")
     +script("assets/lib/@loadingio/ldquery/main/ldq.min.js")
