@@ -17,14 +17,12 @@ COMMON_DECODERS = pcm_s16le mjpeg png
 #PLOTDB_MUXERS = webm webp ogg mp4 mp3 null
 #PLOTDB_ENCODERS = libwebp libwebp_anim libvpx_vp8 libopus libx264 libmp3lame aac
 PLOTDB_MUXERS = webm webp mp4 null
-PLOTDB_ENCODERS = libwebp libwebp_anim libvpx_vp8 libopus libx264
+PLOTDB_ENCODERS = libwebp libwebp_anim libvpx_vp8 libx264
 
 FFMPEG_PLOTDB_BC = build/ffmpeg-plotdb/ffmpeg.bc
-FFMPEG_PLOTDB_PC_PATH = ../x264/dist/lib/pkgconfig:../opus/dist/lib/pkgconfig:../libwebp/dist/lib/pkgconfig
+FFMPEG_PLOTDB_PC_PATH = ../x264/dist/lib/pkgconfig:../libwebp/dist/lib/pkgconfig
 PLOTDB_SHARED_DEPS = \
-	build/opus/dist/lib/libopus.so \
 	build/libvpx/dist/lib/libvpx.so \
-	build/lame/dist/lib/libmp3lame.so \
 	build/x264/dist/lib/libx264.so
 
 WEBM_MUXERS = webm ogg null
@@ -223,16 +221,14 @@ build/ffmpeg-plotdb/ffmpeg.bc: $(PLOTDB_SHARED_DEPS) build/libwebp/dist/lib/libw
 		$(FFMPEG_COMMON_ARGS) \
 		$(addprefix --enable-encoder=,$(PLOTDB_ENCODERS)) \
 		$(addprefix --enable-muxer=,$(PLOTDB_MUXERS)) \
-		--enable-libopus \
 		--enable-libvpx \
 		--enable-gpl \
 		--enable-libx264 \
  		--enable-libwebp \
-		--extra-cflags="-s USE_ZLIB=1 -I../libvpx/dist/include -I../lame/dist/include -I../libwebp/dist/include" \
-		--extra-ldflags="-r -L../lame/dist/lib -L../libvpx/dist/lib -L../libwebp/dist/lib" \
+		--extra-cflags="-s USE_ZLIB=1 -I../libvpx/dist/include -I../libwebp/dist/include" \
+		--extra-ldflags="-r -L../libvpx/dist/lib -L../libwebp/dist/lib" \
 		&& \
 	emmake make -j EXESUF=.bc
-#		--enable-libmp3lame \
 
 build/ffmpeg-webm/ffmpeg.bc: $(WEBM_SHARED_DEPS)
 	cd build/ffmpeg-webm && \

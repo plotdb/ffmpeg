@@ -1,6 +1,9 @@
 # @plotdb/ffmpeg
 
-ffmpeg, in browsers, for `webm` / `mp4` / `webp` output.
+ffmpeg in browsers with
+
+ - `webm` / `mp4` / `webp` output without audio
+ - Promise-based JS API from PNG sequence to above formats with progress information.
 
 The core of this projects ( ffmpeg ) is based on a custom build of `ffmpeg.js` that supports `webm`, `webp` and `mp4`. Based on that `@plotdb/ffmpeg` provides a wrapper for abstracting ffmpeg conversion.
 
