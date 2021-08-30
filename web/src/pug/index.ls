@@ -4,7 +4,7 @@ sample-items = [
   {name: "bars",    frame:  30}
   {name: "clouds",  frame: 150}
   {name: "ripple",  frame:  30}
-  {name: "spinner", frame: 150}
+  {name: "spinner", frame: 250}
   {name: "wedges",  frame:  92}
 ]
 
