@@ -34,8 +34,9 @@ sample-items = [
           @view.render \progress
       }
     .then (ret) -> debounce 500 .then -> ret
-    .then ({blob, url}) ~>
-      @output = {blob, url}
+    .then (blob) ~>
+      console.log blob
+      @output = {blob, url: URL.createObjectURL(blob)}
       @view.render!
     .then ~> @ldcv.toggle false
 

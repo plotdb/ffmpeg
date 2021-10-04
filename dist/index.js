@@ -150,7 +150,7 @@
             });
           });
         } else if (file instanceof ArrayBuffer) {
-          return Promise.resolve(new Uint8Array(buf));
+          return Promise.resolve(new Uint8Array(file));
         } else {
           return Promise.resolve(file);
         }
@@ -176,7 +176,7 @@
         }
         return this$._convert(opt);
       }).then(function(ret){
-        var blob, url;
+        var blob;
         if (progress) {
           this._progress = null;
           progress(1);
@@ -186,11 +186,7 @@
             ? "image/webp"
             : "video/" + format
         });
-        url = URL.createObjectURL(blob);
-        return {
-          blob: blob,
-          url: url
-        };
+        return blob;
       });
     }
   });

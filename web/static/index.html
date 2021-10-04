@@ -69,12 +69,11 @@
       return debounce(500).then(function(){
         return ret;
       });
-    }).then(function(arg$){
-      var blob, url;
-      blob = arg$.blob, url = arg$.url;
+    }).then(function(blob){
+      console.log(blob);
       this$.output = {
         blob: blob,
-        url: url
+        url: URL.createObjectURL(blob)
       };
       return this$.view.render();
     }).then(function(){

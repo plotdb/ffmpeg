@@ -74,7 +74,7 @@ ffmpeg.prototype = Object.create(Object.prototype) <<< do
           fr = new FileReader!
           fr.onload = -> res new Uint8Array fr.result
           fr.readAsArrayBuffer(blob)
-      else if file instanceof ArrayBuffer => Promise.resolve new Uint8Array buf
+      else if file instanceof ArrayBuffer => Promise.resolve new Uint8Array file
       else Promise.resolve(file)
 
     Promise.all promises
@@ -94,8 +94,7 @@ ffmpeg.prototype = Object.create(Object.prototype) <<< do
           @_progress = null
           progress 1
         blob = new Blob [ret.MEMFS.0.data], {type: if format == \webp => "image/webp" else "video/#format"}
-        url = URL.createObjectURL blob
-        return {blob, url}
+        return blob
 
 if module? => module.exports = ffmpeg
 else if window? => window.ffmpeg = ffmpeg
