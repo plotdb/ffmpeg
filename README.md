@@ -30,7 +30,7 @@ prepare `@plotdb/ffmpeg` object:
     ffmpeg = new ffmpeg({ ... });
     ffmpeg.init();
       .then(function() {
-        ffmpeg.conver({ ... });
+        ffmpeg.convert({ ... });
       });
 
 
