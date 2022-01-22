@@ -1,10 +1,10 @@
 doctype html
 html
-  include @/@loadingio/bootstrap.ext/dist/index.pug
+  include @/@loadingio/bootstrap.ext/index.pug
   head
-    +css("assets/lib/bootstrap/main/css/bootstrap.min.css")
+    +css("assets/lib/bootstrap/main/dist/css/bootstrap.min.css")
     +css("assets/lib/@loadingio/bootstrap.ext/main/index.min.css")
-    +css("assets/lib/ldcover/main/ldcv.min.css")
+    +css("assets/lib/ldcover/main/index.min.css")
     style(type="text/css"): :stylus
       body
         background: rgba(228,240,255,1)
@@ -46,11 +46,11 @@ html
           img(ld="image",style="width:200px;height:200px")
           br
           a.my-4.d-none(ld="download") download link
-    +script("assets/lib/bootstrap.native/main/bootstrap-native-v4.min.js")
-    +script("assets/lib/@loadingio/debounce.js/main/debounce.min.js")
-    +script("assets/lib/@loadingio/ldquery/main/ldq.min.js")
+    +script("assets/lib/bootstrap.native/main/dist/bootstrap-native-v4.min.js")
+    +script("assets/lib/@loadingio/debounce.js/main/index.min.js")
+    +script("assets/lib/@loadingio/ldquery/main/index.min.js")
     +script("assets/lib/ldview/main/index.min.js")
-    +script("assets/lib/ldcover/main/ldcv.min.js")
+    +script("assets/lib/ldcover/main/index.min.js")
     +script("assets/lib/@plotdb/ffmpeg/main/index.min.js")
-    script: include:lsc index.ls
+    script(type="module"): include:lsc index.ls
 

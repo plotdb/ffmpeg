@@ -9,7 +9,7 @@ sample-items = [
 ]
 
 @ <<< format: \webm, sample: sample-items.0, method: 'url', output: null
-@ldcv = new ldcover root: '.ldcv', lock: true
+@ldcv = new ldcover root: '.ldcv', lock: true, resident: true
 
 @ffmpeg = new ffmpeg!
 @ffmpeg.init!
@@ -48,7 +48,7 @@ sample-items = [
       method: ({node}) ~> @method = node.value or 'url'
       format: ({node}) ~> @format = node.value or 'webm'
   init:
-    format: ({node}) -> node.value = @format or 'webm'
+    format: ({node}) ~> node.value = @format or 'webm'
     dropdown: ({node}) -> new BSN.Dropdown node
   handler:
     progress: ({node}) ~> node.style.width = "#{@progress}%"
