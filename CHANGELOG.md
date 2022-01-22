@@ -1,5 +1,15 @@
 # Change Log
 
+## v0.0.4
+
+ - further minimize generated js file with mangling and compression
+ - remove livescript header from generated js
+ - upgrade modules
+ - patch test code to make it work with upgraded modules
+ - add `main` and `browser` field in `package.json`.
+ - release with compact directory structure
+
+
 ## v0.0.3
 
  - fix bug: `buf` should be `file` when converting ArrayBuffer
