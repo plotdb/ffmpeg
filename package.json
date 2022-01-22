@@ -9,6 +9,8 @@
   "scripts": {
     "start": "npx server -r web -o true"
   },
+  "browser": "dist/index.min.js",
+  "main": "dist/index.min.js",
   "license": "MIT",
   "devDependencies": {
     "@loadingio/bootstrap.ext": "^0.0.4",
