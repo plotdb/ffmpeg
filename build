@@ -9,7 +9,9 @@ echo "building index.ls -> index.js ..."
 echo "minify index.js -> index.min.js ..."
 ./node_modules/.bin/uglifyjs dist/index.js -m -c > dist/index.min.js
 echo "copy plotdb-ffmpeg-worker.js to dist ..."
-cp ffmpeg.js/plotdb-ffmpeg-worker.js dist/worker.js
+# the worker calls X where is set to db.abort
+# however db.abort is undefined. anyway we fallback X to a empty function if db.abort is not defined.
+cat ffmpeg.js/plotdb-ffmpeg-worker.js | sed 's/db.abort/db.abort || (function(){})/' > dist/worker.js
 
 echo "copy dist to web ..."
 rm -rf web/static/assets/lib/@plotdb/ffmpeg/main/

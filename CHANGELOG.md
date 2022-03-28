@@ -1,5 +1,10 @@
 # Change Log
 
+## v0.0.5
+
+ - suppress `X is not a function` error message by giving it a dummy function.
+
+
 ## v0.0.4
 
  - further minimize generated js file with mangling and compression

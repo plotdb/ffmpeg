@@ -1,6 +1,6 @@
 {
   "name": "@plotdb/ffmpeg",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "author": "zbryikt",
   "description": "ffmpeg wasm custom build for mp4, webm and webp",
   "files": [
