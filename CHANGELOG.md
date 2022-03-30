@@ -3,7 +3,7 @@
 ## v0.0.6
 
  - add `-preset ultrafast` to prevent from OOM issue ( mp4 works, but webm still doesn't )
-   - webm can only generate with images < 1024 x 704.
+   - webm can only generate with images < 1024 x 704 with 15frames, and will be lower when more frames.
 
 
 ## v0.0.5
