@@ -1,5 +1,11 @@
 # Change Log
 
+## v0.0.6
+
+ - add `-preset ultrafast` to prevent from OOM issue ( mp4 works, but webm still doesn't )
+   - webm can only generate with images < 1024 x 704.
+
+
 ## v0.0.5
 
  - suppress `X is not a function` error message by giving it a dummy function.
