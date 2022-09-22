@@ -111,8 +111,8 @@
       });
     },
     convert: function(arg$){
-      var files, format, progress, ref$, canvas, promises, this$ = this;
-      files = arg$.files, format = arg$.format, progress = arg$.progress;
+      var files, format, progress, fps, ref$, canvas, promises, this$ = this;
+      files = arg$.files, format = arg$.format, progress = arg$.progress, fps = arg$.fps;
       ref$ = [files || [], format || 'webm', this.canvas], files = ref$[0], format = ref$[1], canvas = ref$[2];
       promises = files.map(function(file){
         var img, p;
@@ -155,15 +155,17 @@
         }
       });
       return Promise.all(promises).then(function(files){
-        var opt;
+        var args, opt;
         files = files.map(function(data, idx){
           return {
             name: ('' + idx).padStart(5, '0') + ".png",
             data: data
           };
         });
+        args = [].concat(ffmpeg.args[format]);
+        args.splice(0, 0, '-r', (fps || 30) + "");
         opt = {
-          arguments: ffmpeg.args[format],
+          arguments: args,
           MEMFS: files,
           TOTAL_MEMORY: 4 * 1024 * 1024 * 1024
         };

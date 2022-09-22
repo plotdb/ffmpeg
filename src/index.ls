@@ -44,7 +44,7 @@ ffmpeg.prototype = Object.create(Object.prototype) <<< do
       @worker.postMessage({type: \run} <<< opt)
 
   # files: either list of url / Image object, uint8array or arraybuffer.
-  convert: ({files, format, progress}) ->
+  convert: ({files, format, progress, fps}) ->
     [files, format, canvas] = [(files or []), (format or 'webm'), @canvas]
     # url: fetch doesn't work with local environment
     # buffer: somehow complicated to do. redundant for every user.
@@ -80,8 +80,10 @@ ffmpeg.prototype = Object.create(Object.prototype) <<< do
     Promise.all promises
       .then (files) ~>
         files = files.map (data, idx) -> {name: "#{('' + idx).padStart(5, '0')}.png", data: data}
+        args = [] ++ ffmpeg.args[format]
+        args.splice 0, 0, \-r, "#{fps or 30}"
         opt = {} <<< {
-          arguments: ffmpeg.args[format]
+          arguments: args
           MEMFS: files
           TOTAL_MEMORY: 4 * 1024 * 1024 * 1024
         }

@@ -1,5 +1,10 @@
 # Change Log
 
+## v0.0.7
+
+ - support `fps` option in `convert` api
+
+
 ## v0.0.6
 
  - add `-preset ultrafast` to prevent from OOM issue ( mp4 works, but webm still doesn't )

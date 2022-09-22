@@ -43,12 +43,13 @@ prepare `@plotdb/ffmpeg` object:
 
  - `init()`: initialize. return Promsie, resolved when initialized.
    - guaranteed to init only once against multiple calls
- - `convert({files, format, progress})`: convert given `files` to `format`, watching progress by `progress`.
+ - `convert({files, format, progress, fps})`: convert given `files` to `format`, watching progress by `progress`.
    - parameters:
      - `files`: array of either url, Image object, ArrayBuffer or Uint8Array for the images to encode. default `[]`.
      - `format`: either `webm`, `webp` or `mp4`. default `webm`.
      - `progress(perecnt)`: optional. if provided, called when convering makes progress.
        - `percent`: number between `0` ~ `1`. for `0%` ~ `100%` progress correspondingly.
+     - `fps`: frame rate (frame per second). default `30` is omitted.
      - multiple `convert` calls will be queued.
    - return a Promise resolving blob for the generated file.
 
