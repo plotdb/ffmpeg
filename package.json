@@ -1,6 +1,6 @@
 {
   "name": "@plotdb/ffmpeg",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "author": "zbryikt",
   "description": "ffmpeg wasm custom build for mp4, webm and webp",
   "files": [
@@ -13,15 +13,15 @@
   "main": "dist/index.min.js",
   "license": "MIT",
   "devDependencies": {
-    "@loadingio/bootstrap.ext": "^0.0.4",
+    "@loadingio/bootstrap.ext": "^0.0.9",
     "@loadingio/debounce.js": "1.0.1",
-    "@loadingio/ldquery": "^3.0.2",
-    "@zbryikt/template": "^2.3.33",
+    "@loadingio/ldquery": "^3.0.4",
+    "@zbryikt/template": "^2.3.45",
     "bootstrap": "^4.6.1",
     "bootstrap.native": "^4.0.4",
-    "fedep": "^1.1.2",
-    "ldcover": "^3.0.1",
-    "ldview": "^1.0.0"
+    "fedep": "^1.1.11",
+    "ldcover": "^3.5.2",
+    "ldview": "^1.4.0"
   },
   "frontendDependencies": {
     "root": "web/static/assets/lib",

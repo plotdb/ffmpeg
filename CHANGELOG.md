@@ -1,5 +1,11 @@
 # Change Log
 
+## v0.0.8
+
+ - add `cancel()` api for canceling a running task.
+ - upgrade modules for vulnerabilities fixing
+
+
 ## v0.0.7
 
  - support `fps` option in `convert` api
