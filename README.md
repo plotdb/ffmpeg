@@ -43,6 +43,7 @@ prepare `@plotdb/ffmpeg` object:
 
  - `init()`: initialize. return Promsie, resolved when initialized.
    - guaranteed to init only once against multiple calls
+   - `convert()` by default calls `init()` to ensure a inited web worker to use.
  - `convert({files, format, progress, fps})`: convert given `files` to `format`, watching progress by `progress`.
    - parameters:
      - `files`: array of either url, Image object, ArrayBuffer or Uint8Array for the images to encode. default `[]`.
@@ -52,6 +53,8 @@ prepare `@plotdb/ffmpeg` object:
      - `fps`: frame rate (frame per second). default `30` is omitted.
      - multiple `convert` calls will be queued.
    - return a Promise resolving blob for the generated file.
+ - `cancel()`: stop current job, and reject with lderror `999`.
+   - next job, if any, will still start automatically.
 
 
 ## Custom build

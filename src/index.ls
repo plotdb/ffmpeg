@@ -36,12 +36,22 @@ ffmpeg.prototype = Object.create(Object.prototype) <<< do
         @queue.main = null
         if !(ret = @queue.list.splice 0, 1 .0) => return
         ret.res!
+
+  cancel: ->
+    if !@queue.main => return
+    @queue.main.rej(new Error! <<< {name: \lderror, id: 999, msg: \canceled})
+    @queue.main = null
+    @worker.terminate!
+    @ <<< worker: null, inited: false
+    if (ret = @queue.list.splice 0, 1 .0) => ret.res!
+    return
+
   _convert: (opt) ->
     p = if !@queue.main => Promise.resolve!
     else new Promise (res, rej) ~> @queue.list.push {res, rej}
     p.then ~> new Promise (res, rej) ~>
       @queue.main = {res, rej}
-      @worker.postMessage({type: \run} <<< opt)
+      @init!then ~> @worker.postMessage({type: \run} <<< opt)
 
   # files: either list of url / Image object, uint8array or arraybuffer.
   convert: ({files, format, progress, fps}) ->

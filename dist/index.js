@@ -88,6 +88,20 @@
         };
       });
     },
+    cancel: function(){
+      var ref$, ret;
+      if (!this.queue.main) {
+        return;
+      }
+      this.queue.main.rej((ref$ = new Error(), ref$.name = 'lderror', ref$.id = 999, ref$.msg = 'canceled', ref$));
+      this.queue.main = null;
+      this.worker.terminate();
+      this.worker = null;
+      this.inited = false;
+      if (ret = this.queue.list.splice(0, 1)[0]) {
+        ret.res();
+      }
+    },
     _convert: function(opt){
       var p, this$ = this;
       p = !this.queue.main
@@ -104,9 +118,11 @@
             res: res,
             rej: rej
           };
-          return this$.worker.postMessage(import$({
-            type: 'run'
-          }, opt));
+          return this$.init().then(function(){
+            return this$.worker.postMessage(import$({
+              type: 'run'
+            }, opt));
+          });
         });
       });
     },
