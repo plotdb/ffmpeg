@@ -17,7 +17,8 @@ COMMON_DECODERS = pcm_s16le mjpeg png
 #PLOTDB_MUXERS = webm webp ogg mp4 mp3 null
 #PLOTDB_ENCODERS = libwebp libwebp_anim libvpx_vp8 libopus libx264 libmp3lame aac
 PLOTDB_MUXERS = webm webp mp4 null
-PLOTDB_ENCODERS = libwebp libwebp_anim libvpx_vp8 libx264
+#PLOTDB_ENCODERS = libwebp libwebp_anim libvpx_vp8 libx264
+PLOTDB_ENCODERS = libwebp libvpx_vp8 libx264
 
 FFMPEG_PLOTDB_BC = build/ffmpeg-plotdb/ffmpeg.bc
 FFMPEG_PLOTDB_PC_PATH = ../x264/dist/lib/pkgconfig:../libwebp/dist/lib/pkgconfig
@@ -267,7 +268,8 @@ EMCC_COMMON_ARGS = \
 	-s EXIT_RUNTIME=1 \
 	-s NODEJS_CATCH_EXIT=0 \
 	-s NODEJS_CATCH_REJECTION=0 \
-	-s TOTAL_MEMORY=67108864 \
+	-s TOTAL_MEMORY=1073741824 \
+	-s ALLOW_MEMORY_GROWTH=1 \
 	-lnodefs.js -lworkerfs.js \
 	--pre-js $(PRE_JS) \
 	-o $@

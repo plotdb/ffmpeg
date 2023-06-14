@@ -1,5 +1,11 @@
 # Change Log
 
+## v0.0.9
+
+ - rebuild worker with `TOTAL_MEMORY=1073741824` and `ALLOW_MEMORY_GROWTH=1` to prevent from OOM
+ - use libwebp directly for libwebp animation generation
+
+
 ## v0.0.8
 
  - add `cancel()` api for canceling a running task.

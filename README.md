@@ -75,9 +75,32 @@ To rebuild the custom build version worker in `@plotdb/ffmpeg`, you need:
  - apply `Makefile` patch from this project. ( see `ffmpeg.js/MEMO.md` in this repo )
    - this patch includes a pull request not yet merged, basically for newer `emscripten` to work:
      - https://github.com/Kagami/ffmpeg.js/pull/149
+ - patch libavformat/webpenc.c bug if necessary (see below)
  - run `make plotdb`
 
-A sample worker js file is available in `ffmpeg.js/plotdb-ffmpeg-worker.js`, 6.6MB in size.
+A sample worker js file is available in `ffmpeg.js/plotdb-ffmpeg-worker.js`, 5.38MB in size.
+
+
+## webpenc patch
+
+in webp encoder in `libavformat`, default animation disposal method (how to handle pixels covered by transparent pixels between frames) is set to 0, which means the previous canvas contents are retained. This issue can be observed by creating animation with opacity changes.
+
+In `flush` function in `libavformat/webpenc.c`, change `avio_w8(s->pb, 0)` to `avio_w8(s->pb, 0x1)` fixes this issue:
+
+    if (w->frame_count > trailer) {
+        avio_write(s->pb, "ANMF", 4);
+        avio_wl32(s->pb, 16 + w->last_pkt.size - skip);
+        avio_wl24(s->pb, 0);
+        avio_wl24(s->pb, 0);
+        avio_wl24(s->pb, st->codecpar->width - 1);
+        avio_wl24(s->pb, st->codecpar->height - 1);
+        if (w->last_pkt.pts != AV_NOPTS_VALUE && pts != AV_NOPTS_VALUE) {
+            avio_wl24(s->pb, pts - w->last_pkt.pts);
+        } else
+            avio_wl24(s->pb, w->last_pkt.duration);
+        avio_w8(s->pb, 0x1);
+    }
+
 
 
 ## Other Resources
