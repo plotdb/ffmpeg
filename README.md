@@ -101,6 +101,7 @@ In `flush` function in `libavformat/webpenc.c`, change `avio_w8(s->pb, 0)` to `a
         avio_w8(s->pb, 0x1);
     }
 
+check [this link](https://trac.ffmpeg.org/ticket/7941) for more information.
 
 
 ## Other Resources
