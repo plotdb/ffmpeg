@@ -11,6 +11,14 @@ ffmpeg.args = do
   mp4: ["-i" "%05d.png" "-preset" "ultrafast" "-c:v" "libx264" "-pix_fmt" "yuv420p" "out.mp4"]
   webm: ["-i" "%05d.png" "-preset" "ultrafast" "-auto-alt-ref" "0" "-c:v" "libvpx" "-b:v" "2M" "-crf" "-1" "out.webm"]
   webp: ["-i" "%05d.png" "-vcodec" "libwebp" "-lossless" "1" "-loop" "0" "out.webp"]
+  # gif can be supported (yet not built yet)
+  # for options explanation: https://superuser.com/questions/556029/
+  gif: [
+    "-i" "%05d.png" "-ss" "30" "-t" "3"
+    "-vf" "fps=10,scale=320:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse"
+    "-loop" "0" "out.gif"
+  ]
+
 
 ffmpeg.prototype = Object.create(Object.prototype) <<< do
   on: (n, cb) -> (if Array.isArray(n) => n else [n]).map (n) ~> @evt-handler.[][n].push cb

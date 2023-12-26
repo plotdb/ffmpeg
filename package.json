@@ -13,14 +13,14 @@
   "main": "dist/index.min.js",
   "license": "MIT",
   "devDependencies": {
-    "@loadingio/bootstrap.ext": "^0.0.9",
+    "@loadingio/bootstrap.ext": "^0.0.11",
     "@loadingio/debounce.js": "1.0.1",
-    "@loadingio/ldquery": "^3.0.4",
+    "@loadingio/ldquery": "^3.0.5",
     "@zbryikt/template": "^2.3.45",
     "bootstrap": "^4.6.1",
-    "bootstrap.native": "^4.0.4",
+    "bootstrap.native": "^3.0.14",
     "fedep": "^1.1.11",
-    "ldcover": "^3.5.2",
+    "ldcover": "^3.5.3",
     "ldview": "^1.4.0"
   },
   "frontendDependencies": {
