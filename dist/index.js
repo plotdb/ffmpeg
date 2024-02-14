@@ -17,8 +17,8 @@
   ffmpeg.args = {
     mp4: ["-i", "%05d.png", "-preset", "ultrafast", "-c:v", "libx264", "-pix_fmt", "yuv420p", "out.mp4"],
     webm: ["-i", "%05d.png", "-preset", "ultrafast", "-auto-alt-ref", "0", "-c:v", "libvpx", "-b:v", "2M", "-crf", "-1", "out.webm"],
-    webp: ["-i", "%05d.png", "-vcodec", "libwebp", "-lossless", "1", "-loop", "0", "out.webp"],
-    gif: ["-i", "%05d.png", "-ss", "30", "-t", "3", "-vf", "fps=10,scale=320:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse", "-loop", "0", "out.gif"]
+    webp: ["-i", "%05d.png", "-vcodec", "libwebp", "-lossless", "1", "-loop", "<loopValue>", "out.webp"],
+    gif: ["-i", "%05d.png", "-ss", "30", "-t", "3", "-vf", "fps=10,scale=320:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse", "-loop", "<loopValue>", "out.gif"]
   };
   ffmpeg.prototype = import$(Object.create(Object.prototype), {
     on: function(n, cb){
@@ -128,9 +128,16 @@
       });
     },
     convert: function(arg$){
-      var files, format, progress, fps, ref$, canvas, promises, this$ = this;
-      files = arg$.files, format = arg$.format, progress = arg$.progress, fps = arg$.fps;
+      var files, format, progress, fps, repeatCount, ref$, canvas, loopValue, promises, this$ = this;
+      files = arg$.files, format = arg$.format, progress = arg$.progress, fps = arg$.fps, repeatCount = arg$.repeatCount;
       ref$ = [files || [], format || 'webm', this.canvas], files = ref$[0], format = ref$[1], canvas = ref$[2];
+      loopValue = format === 'gif'
+        ? repeatCount == null || !repeatCount
+          ? 0
+          : repeatCount === 1
+            ? -1
+            : repeatCount - 1
+        : repeatCount == null ? 0 : repeatCount;
       promises = files.map(function(file){
         var img, p;
         if (typeof file === 'string') {
@@ -180,6 +187,13 @@
           };
         });
         args = [].concat(ffmpeg.args[format]);
+        args = args.map(function(it){
+          if (it !== "<loopValue>") {
+            return it;
+          } else {
+            return loopValue + "";
+          }
+        });
         args.splice(0, 0, '-r', (fps || 30) + "");
         opt = {
           arguments: args,

@@ -1,5 +1,10 @@
 # Change Log
 
+## v0.0.10
+
+ - support `repeatCount` in `gif` and `webp` generation.
+
+
 ## v0.0.9
 
  - rebuild worker with `TOTAL_MEMORY=1073741824` and `ALLOW_MEMORY_GROWTH=1` to prevent from OOM

@@ -9,14 +9,17 @@ ffmpeg = (opt = {}) ->
 
 ffmpeg.args = do
   mp4: ["-i" "%05d.png" "-preset" "ultrafast" "-c:v" "libx264" "-pix_fmt" "yuv420p" "out.mp4"]
-  webm: ["-i" "%05d.png" "-preset" "ultrafast" "-auto-alt-ref" "0" "-c:v" "libvpx" "-b:v" "2M" "-crf" "-1" "out.webm"]
-  webp: ["-i" "%05d.png" "-vcodec" "libwebp" "-lossless" "1" "-loop" "0" "out.webp"]
+  webm: [
+    "-i" "%05d.png" "-preset" "ultrafast" "-auto-alt-ref" "0" "-c:v" "libvpx" "-b:v" "2M"
+    "-crf" "-1" "out.webm"
+  ]
+  webp: ["-i" "%05d.png" "-vcodec" "libwebp" "-lossless" "1" "-loop" "<loopValue>" "out.webp"]
   # gif can be supported (yet not built yet)
   # for options explanation: https://superuser.com/questions/556029/
   gif: [
     "-i" "%05d.png" "-ss" "30" "-t" "3"
     "-vf" "fps=10,scale=320:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse"
-    "-loop" "0" "out.gif"
+    "-loop" "<loopValue>" "out.gif"
   ]
 
 
@@ -62,14 +65,21 @@ ffmpeg.prototype = Object.create(Object.prototype) <<< do
       @init!then ~> @worker.postMessage({type: \run} <<< opt)
 
   # files: either list of url / Image object, uint8array or arraybuffer.
-  convert: ({files, format, progress, fps}) ->
+  convert: ({files, format, progress, fps, repeatCount}) ->
     [files, format, canvas] = [(files or []), (format or 'webm'), @canvas]
+    # repeatCount: 0 = infinite. 1, 2, ... times of playing.
+    # gif: -1 = only once. 0: infinite. 1 (play twice). 2(3 times), ...
+    # webp: same as repeatCount
+    loop-value = if format == \gif =>
+      if !repeatCount? or !repeatCount => 0 else if repeatCount == 1 => -1 else repeatCount - 1
+    else
+      if !repeatCount? => 0 else repeatCount
     # url: fetch doesn't work with local environment
     # buffer: somehow complicated to do. redundant for every user.
     # Image + Canvas + FileReader: don't have to worry about URL.
     #   Image(any url, remote or local) -> Canvas -> blob -> read by FileReader -> Buffer
 
-    promises = files.map (file) -> 
+    promises = files.map (file) ->
       if typeof(file) == \string =>
         img = new Image!
         img.src = file
@@ -99,6 +109,7 @@ ffmpeg.prototype = Object.create(Object.prototype) <<< do
       .then (files) ~>
         files = files.map (data, idx) -> {name: "#{('' + idx).padStart(5, '0')}.png", data: data}
         args = [] ++ ffmpeg.args[format]
+        args = args.map -> if it != "<loopValue>" => it else "#loop-value"
         args.splice 0, 0, \-r, "#{fps or 30}"
         opt = {} <<< {
           arguments: args
