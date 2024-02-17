@@ -16,7 +16,7 @@
   };
   ffmpeg.args = {
     mp4: ["-framerate", "<fps>", "-i", "%05d.png", "-c:v", "libx264", "-r", "<fps>", "-preset", "<preset>", "-crf", "<crf>", "-pix_fmt", "yuv420p", "-b:v", "0", "out.mp4"],
-    webm: ["-framerate", "<fps>", "-i", "%05d.png", "-c:v", "libvpx", "-r", "<fps>", "-preset", "<preset>", "-crf", "<crf>", "-auto-alt-ref", "0", "-b:v", "0", "out.webm"],
+    webm: ["-framerate", "<fps>", "-i", "%05d.png", "-c:v", "libvpx", "-r", "<fps>", "-crf", "<crf-webm>", "-b:v", "16M", "-deadline", "good", "-cpu-used", "0", "-auto-alt-ref", "0", "out.webm"],
     webp: ["-framerate", "<fps>", "-i", "%05d.png", "-c:v", "libwebp", "-r", "<fps>", "-loop", "<loopValue>", "-quality", "<quality>", "-compression_level", "4", "out.webp"],
     gif: ["-framerate", "<fps>", "-i", "%05d.png", "-c:v", "gif", "-r", "<fps>", "-loop", "<loopValue>", "-vf", "split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse", "out.gif"]
   };
@@ -197,6 +197,8 @@
           } else if (it === "<quality>") {
             return "80";
           } else if (it === "<crf>") {
+            return "18";
+          } else if (it === "<crf-webm>") {
             return "18";
           } else {
             return it;

@@ -11,9 +11,12 @@ ffmpeg = (opt = {}) ->
 # `-r`: output fps
 # `-c:v`: used codec
 # `-preset`: from `ultrafast` to `veryslow`
-# `-crf`: quality. from 0 to 51, lower better
-# `-b:v`: bitrate. explicitly set to 0 to consider `-crf` only.
-# `-auto-alt-ref`: some additional frames for editing. `0` to disable it.
+# `-crf`: quality. mp4: from 0 to 51, lower better; webm: from 4 to 63, lower better.
+# `-b:v`: bitrate.
+#   - mp4: explicitly set to 0 to consider `-crf` only.
+#   - webm: it seems that quality is still affected by this, so we can set a bigger value (e.g., 16M).
+# `-auto-alt-ref`: some additional frames in webm for editing. `0` to disable it. need 0 for transparency
+# `-deadline`: realtime, good, best
 # `-compression_level`: 0 to 6. default 4. only for webp
 # `-quality`: 0 to 100. hight better. mainly for webp.
 # `-loop`: loop count.
@@ -26,8 +29,9 @@ ffmpeg.args = do
   ]
   webm: [
     "-framerate" "<fps>" "-i" "%05d.png" "-c:v" "libvpx"
-    "-r" "<fps>" "-preset" "<preset>" "-crf" "<crf>"
-    "-auto-alt-ref" "0" "-b:v" "0" "out.webm"
+    "-r" "<fps>" "-crf" "<crf-webm>" "-b:v" "16M"
+    "-deadline" "good" "-cpu-used" "0"
+    "-auto-alt-ref" "0" "out.webm"
   ]
   webp: [
     "-framerate" "<fps>" "-i" "%05d.png" "-c:v" "libwebp"
@@ -135,6 +139,7 @@ ffmpeg.prototype = Object.create(Object.prototype) <<< do
           else if it == "<fps>" => "#fps"
           else if it == "<quality>" => "80"
           else if it == "<crf>" => "18"
+          else if it == "<crf-webm>" => "18"
           else it
         opt = {} <<< {
           arguments: args
