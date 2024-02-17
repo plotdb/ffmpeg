@@ -1,5 +1,12 @@
 # Change Log
 
+## v0.0.12
+
+ - add webm config `-b:v` for better quality
+ - add web config `-deadline`, `-cpu-used` for compression and quality control
+ - add additional comment to explain arguments
+
+
 ## v0.0.11
 
  - tweak ffmpeg options
