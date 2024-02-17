@@ -1,5 +1,10 @@
 # Change Log
 
+## v0.0.11
+
+ - tweak ffmpeg options
+
+
 ## v0.0.10
 
  - support `repeatCount` in `gif` and `webp` generation.

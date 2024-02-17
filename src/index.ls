@@ -7,19 +7,39 @@ ffmpeg = (opt = {}) ->
   @canvas = document.createElement \canvas
   @
 
+# `-framerate`: input fps
+# `-r`: output fps
+# `-c:v`: used codec
+# `-preset`: from `ultrafast` to `veryslow`
+# `-crf`: quality. from 0 to 51, lower better
+# `-b:v`: bitrate. explicitly set to 0 to consider `-crf` only.
+# `-auto-alt-ref`: some additional frames for editing. `0` to disable it.
+# `-compression_level`: 0 to 6. default 4. only for webp
+# `-quality`: 0 to 100. hight better. mainly for webp.
+# `-loop`: loop count.
+# `-vf split ...`: split src to s0 & s1, s0 to gen palette, s1 to apply that pal.
 ffmpeg.args = do
-  mp4: ["-i" "%05d.png" "-preset" "ultrafast" "-c:v" "libx264" "-pix_fmt" "yuv420p" "out.mp4"]
-  webm: [
-    "-i" "%05d.png" "-preset" "ultrafast" "-auto-alt-ref" "0" "-c:v" "libvpx" "-b:v" "2M"
-    "-crf" "-1" "out.webm"
+  mp4: [
+    "-framerate" "<fps>" "-i" "%05d.png" "-c:v" "libx264"
+    "-r" "<fps>" "-preset" "<preset>" "-crf" "<crf>"
+    "-pix_fmt" "yuv420p" "-b:v" "0" "out.mp4"
   ]
-  webp: ["-i" "%05d.png" "-vcodec" "libwebp" "-lossless" "1" "-loop" "<loopValue>" "out.webp"]
+  webm: [
+    "-framerate" "<fps>" "-i" "%05d.png" "-c:v" "libvpx"
+    "-r" "<fps>" "-preset" "<preset>" "-crf" "<crf>"
+    "-auto-alt-ref" "0" "-b:v" "0" "out.webm"
+  ]
+  webp: [
+    "-framerate" "<fps>" "-i" "%05d.png" "-c:v" "libwebp"
+    "-r" "<fps>" "-loop" "<loopValue>" "-quality" "<quality>"
+    "-compression_level" "4" "out.webp"
+  ]
   # gif can be supported (yet not built yet)
   # for options explanation: https://superuser.com/questions/556029/
   gif: [
-    "-i" "%05d.png" "-ss" "30" "-t" "3"
-    "-vf" "fps=10,scale=320:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse"
-    "-loop" "<loopValue>" "out.gif"
+    "-framerate" "<fps>" "-i" "%05d.png" "-c:v" "gif"
+    "-r" "<fps>" "-loop" "<loopValue>"
+    "-vf" "split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse" "out.gif"
   ]
 
 
@@ -109,8 +129,13 @@ ffmpeg.prototype = Object.create(Object.prototype) <<< do
       .then (files) ~>
         files = files.map (data, idx) -> {name: "#{('' + idx).padStart(5, '0')}.png", data: data}
         args = [] ++ ffmpeg.args[format]
-        args = args.map -> if it != "<loopValue>" => it else "#loop-value"
-        args.splice 0, 0, \-r, "#{fps or 30}"
+        args = args.map ->
+          if it == "<loopValue>" => "#loop-value"
+          else if it == "<preset>" => "ultrafast"
+          else if it == "<fps>" => "#fps"
+          else if it == "<quality>" => "80"
+          else if it == "<crf>" => "18"
+          else it
         opt = {} <<< {
           arguments: args
           MEMFS: files

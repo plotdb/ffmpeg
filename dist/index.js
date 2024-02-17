@@ -15,10 +15,10 @@
     return this;
   };
   ffmpeg.args = {
-    mp4: ["-i", "%05d.png", "-preset", "ultrafast", "-c:v", "libx264", "-pix_fmt", "yuv420p", "out.mp4"],
-    webm: ["-i", "%05d.png", "-preset", "ultrafast", "-auto-alt-ref", "0", "-c:v", "libvpx", "-b:v", "2M", "-crf", "-1", "out.webm"],
-    webp: ["-i", "%05d.png", "-vcodec", "libwebp", "-lossless", "1", "-loop", "<loopValue>", "out.webp"],
-    gif: ["-i", "%05d.png", "-ss", "30", "-t", "3", "-vf", "fps=10,scale=320:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse", "-loop", "<loopValue>", "out.gif"]
+    mp4: ["-framerate", "<fps>", "-i", "%05d.png", "-c:v", "libx264", "-r", "<fps>", "-preset", "<preset>", "-crf", "<crf>", "-pix_fmt", "yuv420p", "-b:v", "0", "out.mp4"],
+    webm: ["-framerate", "<fps>", "-i", "%05d.png", "-c:v", "libvpx", "-r", "<fps>", "-preset", "<preset>", "-crf", "<crf>", "-auto-alt-ref", "0", "-b:v", "0", "out.webm"],
+    webp: ["-framerate", "<fps>", "-i", "%05d.png", "-c:v", "libwebp", "-r", "<fps>", "-loop", "<loopValue>", "-quality", "<quality>", "-compression_level", "4", "out.webp"],
+    gif: ["-framerate", "<fps>", "-i", "%05d.png", "-c:v", "gif", "-r", "<fps>", "-loop", "<loopValue>", "-vf", "split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse", "out.gif"]
   };
   ffmpeg.prototype = import$(Object.create(Object.prototype), {
     on: function(n, cb){
@@ -188,13 +188,20 @@
         });
         args = [].concat(ffmpeg.args[format]);
         args = args.map(function(it){
-          if (it !== "<loopValue>") {
-            return it;
-          } else {
+          if (it === "<loopValue>") {
             return loopValue + "";
+          } else if (it === "<preset>") {
+            return "ultrafast";
+          } else if (it === "<fps>") {
+            return fps + "";
+          } else if (it === "<quality>") {
+            return "80";
+          } else if (it === "<crf>") {
+            return "18";
+          } else {
+            return it;
           }
         });
-        args.splice(0, 0, '-r', (fps || 30) + "");
         opt = {
           arguments: args,
           MEMFS: files,
