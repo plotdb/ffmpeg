@@ -11,7 +11,13 @@ echo "minify index.js -> index.min.js ..."
 echo "copy plotdb-ffmpeg-worker.js to dist ..."
 # the worker calls X where is set to db.abort
 # however db.abort is undefined. anyway we fallback X to a empty function if db.abort is not defined.
-cat ffmpeg.js/plotdb-ffmpeg-worker.js | sed 's/db.abort/db.abort || (function(){})/' > dist/worker.js
+# output files are read from MEMFS node contents ( `b.ga` ), which emscripten grows by doubling its capacity:
+# the real length is in usedBytes ( `b.ka` ). without slicing, outputs are padded with zeros up to a power of two
+# ( e.g. a 280KB webm comes back as 512KB ). keep only the used bytes.
+cat ffmpeg.js/plotdb-ffmpeg-worker.js \
+  | sed 's/db.abort/db.abort || (function(){})/' \
+  | sed 's/var c=Q(b.ga);return{name:b.name,data:c}/var c=Q(b.ga);if(typeof b.ka=="number"\&\&b.ka<c.length)c=c.slice(0,b.ka);return{name:b.name,data:c}/' \
+  > dist/worker.js
 
 echo "copy dist to web ..."
 rm -rf web/static/assets/lib/@plotdb/ffmpeg/main/

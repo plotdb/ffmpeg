@@ -1,5 +1,12 @@
 # Change Log
 
+## v0.0.13
+
+ - fix output files padded with zeros: the worker returned the whole MEMFS buffer ( capacity grows by doubling )
+   instead of its used bytes, so large webm / webp outputs came back up to about twice their real size.
+   `build` now patches the worker to slice outputs to `usedBytes`.
+
+
 ## v0.0.12
 
  - add webm config `-b:v` for better quality
