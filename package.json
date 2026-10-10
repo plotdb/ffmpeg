@@ -16,10 +16,10 @@
     "@loadingio/bootstrap.ext": "^0.0.11",
     "@loadingio/debounce.js": "1.0.1",
     "@loadingio/ldquery": "^3.0.5",
-    "@zbryikt/template": "^2.3.45",
+    "@zbryikt/template": "^2.5.0",
     "bootstrap": "^4.6.1",
     "bootstrap.native": "^3.0.14",
-    "fedep": "^1.1.11",
+    "fedep": "^1.9.0",
     "ldcover": "^3.5.3",
     "ldview": "^1.4.0"
   },
